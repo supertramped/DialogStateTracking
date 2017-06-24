@@ -134,3 +134,16 @@ class LSTM_net():
             saver.restore(self.sess, ckpt.model_checkpoint_path)
         else:
             print('\n:: <ERR> checkpoint not found! \n')
+
+    # restore session from checkpoint
+    def myrestore(self,task_id=None):
+        saver = tf.train.Saver()
+        if task_id is None:
+            ckpt = tf.train.get_checkpoint_state('ckpt/')
+        else:
+            ckpt = tf.train.get_checkpoint_state('ckpt/' + str(task_id))
+        if ckpt and ckpt.model_checkpoint_path:
+            print('\n:: restoring checkpoint from', ckpt.model_checkpoint_path, '\n')
+            saver.restore(self.sess, ckpt.model_checkpoint_path)
+        else:
+            print('\n:: <ERR> checkpoint not found! \n')

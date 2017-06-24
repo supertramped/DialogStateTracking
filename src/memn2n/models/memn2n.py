@@ -101,7 +101,6 @@ class MemN2NDialog(object):
         self._build_inputs()
         self._build_vars()
 
-        
         # cross entropy
         logits = self._inference(self._stories, self._queries) # (batch_size, candidates_size)
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=self._answers, name="cross_entropy")
@@ -137,7 +136,7 @@ class MemN2NDialog(object):
         init_op = tf.global_variables_initializer()
         self._sess = session
         self._sess.run(init_op)
-        self.saver = tf.train.Saver(max_to_keep=1)
+        self.saver = tf.train.Saver()
 
 
     def _build_inputs(self):

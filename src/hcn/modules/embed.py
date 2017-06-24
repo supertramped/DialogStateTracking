@@ -15,7 +15,12 @@ class UtteranceEmbed():
             self.model = word2vec.Word2Vec.load(fname)
 
     def encode(self, utterance):
-        embs = [ self.model[word] for word in utterance.split(' ') if word and word in self.model]
+        embs = []
+        for word in utterance.split(' '):
+            if word and word in self.model:
+                emb = self.model[word]
+                embs.append(emb)
+        #embs = [ self.model[word] for word in utterance.split(' ') if word and word in self.model]
         # average of embeddings
         if len(embs):
             return np.mean(embs, axis=0)

@@ -38,6 +38,7 @@ class ActionTracker():
         # action mask
         self.am = np.zeros([self.action_size], dtype=np.float32)
         # action mask lookup, built on intuition
+        # intuition based on what ?
         self.am_dict = {
                 '0000' : [ 4,8,1,14,7,15],
                 '0001' : [ 4,8,1,14,7],
@@ -71,8 +72,14 @@ class ActionTracker():
         return construct_mask(ctxt_f)
 
     def get_action_templates(self):
-        responses = list(set([ self.et.extract_entities(response, update=False) 
-            for response in util.get_responses() ]))
+        ut_responses = util.get_responses()
+        ent = []
+        for response in ut_responses:
+            ent.append(self.et.extract_entities(response,update=False))
+        responses = list(set(ent))
+
+        #responses = list(set([ self.et.extract_entities(response, update=False) 
+        #    for response in util.get_responses() ]))
 
         def extract_(response):
             template = []
@@ -89,4 +96,5 @@ class ActionTracker():
             return ' '.join(template)
 
         # extract restaurant entities
-        return sorted(set([ extract_(response) for response in responses ]))
+        extracted_responses = sorted(set([ extract_(response) for response in responses ]))
+        return extracted_responses

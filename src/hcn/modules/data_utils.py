@@ -26,7 +26,11 @@ class Data():
         utterances = util.get_utterances(dialogs)
         # get responses
         responses = util.get_responses(dialogs)
-        responses = [ self.get_template_id(response) for response in responses ]
+        new_responses = []
+        for response in responses:
+            new_responses.append(self.get_template_id(response))
+        responses = new_responses
+        #responses = [ self.get_template_id(response) for response in responses ]
 
         trainset = []
         for u,r in zip(utterances, responses):

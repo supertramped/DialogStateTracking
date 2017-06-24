@@ -19,6 +19,10 @@ class Trainer():
         self.emb = UtteranceEmbed()
         at = ActionTracker(et)
 
+        '''
+        ['any preference on a type of cuisine', 'api_call <cuisine> <location> <party_size> <rest_type>', 'great let me do the reservation', 'hello what can i help you with today', 'here it is <info_address>', 'here it is <info_phone>', 'how many people would be in your party', "i'm on it", 'is there anything i can help you with', 'ok let me look into some options for you', 'sure is there anything else to update', 'sure let me find an other option for you', 'what do you think of this option: <restaurant>', 'where should it be', 'which price range are looking for', "you're welcome"]
+
+        '''
         self.dataset, dialog_indices = Data(et, at).trainset
         self.dialog_indices_tr = dialog_indices[:200]
         self.dialog_indices_dev = dialog_indices[200:250]
@@ -31,7 +35,6 @@ class Trainer():
         self.net = LSTM_net(obs_size=obs_size,
                        action_size=action_size,
                        nb_hidden=nb_hidden)
-
 
     def train(self):
 

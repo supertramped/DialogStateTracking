@@ -11,6 +11,7 @@ import tensorflow as tf
 import pickle as pkl
 import sys
 
+from interact1 import *
 
 DATA_DIR = 'data/dialog-bAbI-tasks/'
 P_DATA_DIR = 'data/processed/'
@@ -105,6 +106,8 @@ def parse_args(args):
                         help='num iteration of training over train set')
     parser.add_argument('--log_file', required=False, type=str, default='log.txt',
                         help='enter the name of the log file')
+    parser.add_argument('--interact', action='store_true',
+                        help='interactive dialog')
     args = vars(parser.parse_args(args))
     return args
 
@@ -202,7 +205,7 @@ def main(args):
                 embedding_size= 20, 
                 candidates_vec= candidates_vec, 
                 hops= 3
-            )
+                )
     # gather data in batches
     train, val, test, batches = data_utils.get_batches(train, val, test, metadata, batch_size=BATCH_SIZE)
 
@@ -241,21 +244,35 @@ def main(args):
                 #best_validation_accuracy = val_acc
                 model.saver.save(model._sess, CKPT_DIR + '{}/memn2n_model.ckpt'.format(args['task_id']), 
                         global_step=i)
+
+            model.saver.save(model._sess, CKPT_DIR + '{}/memn2n_model.ckpt_final'.format(args['task_id']), 
+                             global_step=i)        
         # close file
         log_handle.close()
 
     else: # inference
         ###
+
+        print("launching interative dialog session")
+        #print("model's session variables" + model._sess)
+        ckpt = tf.train.get_checkpoint_state(CKPT_DIR + '{}'.format(args['task_id']))
+        if ckpt and ckpt.model_checkpoint_path:
+            print('\n>> restoring checkpoint from', ckpt.model_checkpoint_path)
+            model.saver.restore(model._sess, ckpt.model_checkpoint_path)
+
+        ds = interactive_session(task_id=args['task_id'])
+        ds.interactive_dialog(task_id=args['task_id'])
+        
+        '''
         # restore checkpoint
-        ckpt = tf.train.get_checkpoint_state(CKPT_DIR + str(args['task_id']) )
+        ckpt = tf.train.get_checkpoint_state(CKPT_DIR + '{}'.format(args['task_id']))
         if ckpt and ckpt.model_checkpoint_path:
             print('\n>> restoring checkpoint from', ckpt.model_checkpoint_path)
             model.saver.restore(model._sess, ckpt.model_checkpoint_path)
         #  interactive(model, idx2candid, w2idx, sentence_size, BATCH_SIZE, n_cand, memory_size)
-
         # create an interactive session instance
         isess = InteractiveSession(model, idx2candid, w2idx, n_cand, memory_size)
-        
+
         if args['infer']:
             query = ''
             while query!= 'exit':
@@ -263,7 +280,7 @@ def main(args):
                 print('>> ' + isess.reply(query))
         elif args['ui']:
             return isess
-
+        '''
 
 # _______MAIN_______
 if __name__ == '__main__':
